@@ -1,0 +1,36 @@
+<html>
+<head>
+
+</head>
+
+<body>
+	<p> Berikut adalah artikel yang dipilih untuk dicari nilai sentiment nya. </p>
+	<p> 
+		Keterangan
+		<br/> O : Relevan Menurut Peneliti
+		<br/> X : Tidak Relevan Menurut Peneliti
+		<br/> - : Belum dibaca oleh Peneliti
+	</p>
+
+	<table>
+	<thead>
+		<tr>
+			<th> No. </th>
+			<th> Nama File </th>
+			<th> Relevansi Inggris </th>
+			<th> Relevansi Indonesia Non-Stemming </th>
+			<th> Relevansi Indonesia Stemming </th>
+		</tr>
+	</thead>
+	<tbody>
+	{{ html_articles|safe }}
+
+	</tbody>
+	</table>
+
+	<br/>
+	<br/>
+	<br/>
+</body>
+
+</html>
