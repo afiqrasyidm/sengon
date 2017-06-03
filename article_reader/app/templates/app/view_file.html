@@ -26,48 +26,27 @@
 	<form method="post" action="">
 		{% csrf_token %}
 		<h3> Hasil English Sentiment </h3>
-		<ol>
-			{% for name in article.rel_en %}
-			<li> {{ name }} </li>
-			{% endfor %}
-		</ol>
-		<select name="rel_en">
-			<option value="-1" selected> Tidak Relevan </option>
-			<option value="1"> Relevan </option>
+		<ul>
+			<li> {{ article.rel_en }} </li>
+		</ul>
+
+		<br/>
+		<br/>
+
+		<h3> Hasil Indonesia Sentiment </h3>
+		<ul>
+			<li> {{ article.rel_id }} </li>
+		</ul>
+		<br/>
+		<h3> Evaluasi Peneliti </h3>
+		<select name="rel">
+			<option value="Anies - Sandi" selected> Anies - Sandi </option>
+			<option value="Ahok - Djarot"> Ahok - Djarot </option>
 		</select>
-
-		<br/>
-		<br/>
-
-		<h3> Hasil Indonesia Sentiment <b> Non Stemming </b> </h3>
-		<ol>
-			{% for name in article.rel_id_nonstemming %}
-			<li> {{ name }} </li>
-			{% endfor %}
-		</ol>
-		<select name="rel_id_nonstemming">
-			<option value="-1" selected> Tidak Relevan </option>
-			<option value="1"> Relevan </option>
-		</select>
-
-		<br/>
-		<br/>
-
-		<h3> Hasil Indonesia Sentiment Stemming </h3>
-		<ol>
-			{% for name in article.rel_id_stemming %}
-			<li> {{ name }} </li>
-			{% endfor %}
-		</ol>
-		<select name="rel_id_stemming">
-			<option value="-1" selected> Tidak Relevan </option>
-			<option value="1"> Relevan </option>
-		</select>
-
-		<br/>
-		<br/>
-
 		<button type="submit"> Submit </button>
+		<br/>
+		<br/>
+		<br/>
 	</form>
 </body>
 

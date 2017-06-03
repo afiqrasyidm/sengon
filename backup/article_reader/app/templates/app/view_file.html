@@ -1,0 +1,74 @@
+<html>
+<head>
+
+</head>
+
+<body>
+	{% if info %}
+		<div style="background-color: green; color: black; padding: 8px; font-size: 16px">
+			<p> {{ info }} </p>
+		</div>
+	{% endif %}
+
+	<h1 align="center"> {{ article.title }} </h1>
+
+	{% for p in article.paragraphs %}
+		<p> {{ p }} </p>
+	{% endfor %}
+
+	<br/>
+	<br/>
+	<hr/>
+
+	<br/>
+	<br/>
+
+	<form method="post" action="">
+		{% csrf_token %}
+		<h3> Hasil English Sentiment </h3>
+		<ol>
+			{% for name in article.rel_en %}
+			<li> {{ name }} </li>
+			{% endfor %}
+		</ol>
+		<select name="rel_en">
+			<option value="-1" selected> Tidak Relevan </option>
+			<option value="1"> Relevan </option>
+		</select>
+
+		<br/>
+		<br/>
+
+		<h3> Hasil Indonesia Sentiment <b> Non Stemming </b> </h3>
+		<ol>
+			{% for name in article.rel_id_nonstemming %}
+			<li> {{ name }} </li>
+			{% endfor %}
+		</ol>
+		<select name="rel_id_nonstemming">
+			<option value="-1" selected> Tidak Relevan </option>
+			<option value="1"> Relevan </option>
+		</select>
+
+		<br/>
+		<br/>
+
+		<h3> Hasil Indonesia Sentiment Stemming </h3>
+		<ol>
+			{% for name in article.rel_id_stemming %}
+			<li> {{ name }} </li>
+			{% endfor %}
+		</ol>
+		<select name="rel_id_stemming">
+			<option value="-1" selected> Tidak Relevan </option>
+			<option value="1"> Relevan </option>
+		</select>
+
+		<br/>
+		<br/>
+
+		<button type="submit"> Submit </button>
+	</form>
+</body>
+
+</html>

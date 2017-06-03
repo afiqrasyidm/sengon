@@ -6,38 +6,70 @@ from django.conf import settings
 def reload_all_articles() :
 	models.Article.objects.all().delete()
 	models.EnglishSentiment.objects.all().delete()
-	models.IndonesiaSentimentNonStemming.objects.all().delete()
-	models.IndonesiaSentimentStemming.objects.all().delete()
+	models.IndonesiaSentiment.objects.all().delete()
 
 	files = os.listdir(os.path.join(settings.STATIC_ROOT, "app/articles_politik"))
 	length = len(files)
-	en_files = os.listdir(os.path.join(settings.STATIC_ROOT, "app/sentiment_en_articles_politik"))
-	id_nonstemming_files = os.listdir(os.path.join(settings.STATIC_ROOT, "app/sentiment_id_articles_politik"))
-	id_stemming_files = os.listdir(os.path.join(settings.STATIC_ROOT, "app/sentiment_stemming_id_articles_politik"))
+	path_en = os.path.join(settings.STATIC_ROOT, "app/sentiment_en_articles_politik")
+	path_id = os.path.join(settings.STATIC_ROOT, "app/sentiment_id_articles_politik")
+	en_files = os.listdir(path_en)
+	id_files = os.listdir(path_id)
 
 	for i in range(length) :
 		print(i)
 		article = files[i]
 		f = models.Article.objects.create(filename=article, article=article)
-		article = en_files[i]
-		models.EnglishSentiment.objects.create(article=f, result=article)
-		article = id_nonstemming_files[i]
-		models.IndonesiaSentimentNonStemming.objects.create(article=f, result=article)
-		article = id_stemming_files[i]
-		models.IndonesiaSentimentStemming.objects.create(article=f, result=article)
+		
+		article = open( os.path.join(path_en, en_files[i]), 'br');
+		datajson = json.loads(article.readlines()[0].decode("utf-8", "ignore"))
+		models.EnglishSentiment.objects.create(article=f, result=datajson["partySupport"])
+
+		article = open( os.path.join(path_id, id_files[i]), 'br');
+		datajson = json.loads(article.readlines()[0].decode("utf-8", "ignore"))
+		models.IndonesiaSentiment.objects.create(article=f, result=datajson["partySupport"])
 		
 
-def assess_article(pk, rel_en, rel_id_nonstemming, rel_id_stemming) :
+def assess_article(pk, rel) :
 	try :
 		article = models.Article.objects.get(pk = pk)
-		models.EnglishSentiment.objects.filter(article = article).update(value=rel_en)
-		models.IndonesiaSentimentNonStemming.objects.filter(article = article).update(value=rel_id_nonstemming)
-		models.IndonesiaSentimentStemming.objects.filter(article = article).update(value=rel_id_stemming)
+
+		articles = models.EnglishSentiment.objects.filter(article = article)
+		for a in articles :
+			if (a.result == "Anies - Sandi") :
+				if (rel == "Anies - Sandi") :
+					a.value = 1
+				else :
+					a.value = 2
+			else :
+				if (rel == "Ahok - Djarot") :
+					a.value = 3
+				else :
+					a.value = 4
+			a.save()
+
+		articles = models.IndonesiaSentiment.objects.filter(article = article)
+		for a in articles :
+			if (a.result == "Anies - Sandi") :
+				if (rel == "Anies - Sandi") :
+					a.value = 1
+				else :
+					a.value = 2
+			else :
+				if (rel == "Ahok - Djarot") :
+					a.value = 3
+				else :
+					a.value = 4
+			a.save()
 		
 	except models.Article.DoesNotExist :
 		pass
 		
 def get_all_articles() :
+	# 1 True Positive, Predicted Anies - Sandi 	Actual : Anies - Sandi
+	# 2 False Positive, Predicted Anies - Sandi 	Actual : Ahok - Djarot
+	# 3 True Negative, Predicted Ahok - Djarot 	Actual : Ahok - Djarot
+	# 4 False Negative, Predicted Ahok - Djarot 	Actual : Anies - Sandi
+	
 	articles = models.Article.objects.all()
 	result = []
 	i = 1
@@ -55,14 +87,14 @@ def get_all_articles() :
 			temp['rel_en'] = 0
 
 		try :
-			temp['rel_id_nonstemming'] = models.IndonesiaSentimentNonStemming.objects.get(article = article).value
-		except models.IndonesiaSentimentNonStemming.DoesNotExist :
-			temp['rel_id_nonstemming'] = 0
+			temp['rel_id'] = models.IndonesiaSentiment.objects.get(article = article).value
+		except models.IndonesiaSentiment.DoesNotExist :
+			temp['rel_id'] = 0
 
-		try :
-			temp['rel_id_stemming'] = models.IndonesiaSentimentStemming.objects.get(article = article).value
-		except models.IndonesiaSentimentStemming.DoesNotExist :
-			temp['rel_id_stemming'] = 0
+		# try :
+		# 	temp['rel_id_stemming'] = models.IndonesiaSentimentStemming.objects.get(article = article).value
+		# except models.IndonesiaSentimentStemming.DoesNotExist :
+		# 	temp['rel_id_stemming'] = 0
 
 		i = i + 1
 
@@ -88,41 +120,16 @@ def get_file(pk) :
 
 	try :
 		sentiment = models.EnglishSentiment.objects.get(article = article)
-		path  = os.path.join(settings.STATIC_ROOT, "app/sentiment_en_articles_politik")
-		f = open(os.path.join(path, str(sentiment.result)), 'br')
-		datajson = json.loads(f.readlines()[0].decode("utf-8", "ignore"))
-		result['rel_en'] = []
-		num = min(5, len(datajson))
-		for r in range(num) :
-			result['rel_en'].append(datajson[r]['name'])
+		result['rel_en'] = sentiment.result
 
 	except models.EnglishSentiment.DoesNotExist:
 		return None
 
 	try :
-		sentiment = models.IndonesiaSentimentNonStemming.objects.get(article = article)
-		path  = os.path.join(settings.STATIC_ROOT, "app/sentiment_id_articles_politik")
-		f = open(os.path.join(path, str(sentiment.result)), 'br')
-		datajson = json.loads(f.readlines()[0].decode("utf-8", "ignore"))
-		result['rel_id_nonstemming'] = []
-		num = min(5, len(datajson))
-		for r in range(num) :
-			result['rel_id_nonstemming'].append(datajson[r]['name'])
-	except models.IndonesiaSentimentNonStemming.DoesNotExist:
+		sentiment = models.IndonesiaSentiment.objects.get(article = article)
+		result['rel_id'] = sentiment.result
+
+	except models.IndonesiaSentiment.DoesNotExist:
 		return None
-
-	try :
-		sentiment = models.IndonesiaSentimentStemming.objects.get(article = article)
-		path  = os.path.join(settings.STATIC_ROOT, "app/sentiment_stemming_id_articles_politik")
-		f = open(os.path.join(path, str(sentiment.result)), 'br')
-		datajson = json.loads(f.readlines()[0].decode("utf-8", "ignore"))
-		result['rel_id_stemming'] = []
-		num = min(5, len(datajson))
-		for r in range(num) :
-			result['rel_id_stemming'].append(datajson[r]['name'])
-
-	except models.IndonesiaSentimentStemming.DoesNotExist:
-		return None
-
 
 	return result

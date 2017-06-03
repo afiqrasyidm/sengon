@@ -13,7 +13,7 @@ class Article(models.Model) :
 
 class EnglishSentiment(models.Model) :
 	article = models.ForeignKey(Article, on_delete=models.CASCADE)
-	result = models.FileField(upload_to='sentiment_en_articles_politik/')
+	result = models.CharField(max_length=128)
 	value = models.IntegerField(default = 0)
 	created_at = models.DateTimeField(default=timezone.now, blank=True)
 	updated_at = models.DateTimeField(default=timezone.now, blank=True)
@@ -21,9 +21,9 @@ class EnglishSentiment(models.Model) :
 	def __str__(self):
 		return str(self.id) + " " + self.article.filename
 
-class IndonesiaSentimentNonStemming(models.Model) :
+class IndonesiaSentiment(models.Model) :
 	article = models.ForeignKey(Article, on_delete=models.CASCADE)
-	result = models.FileField(upload_to='sentiment_en_articles_politik/')
+	result = models.CharField(max_length=128)
 	value = models.IntegerField(default = 0)
 	created_at = models.DateTimeField(default=timezone.now, blank=True)
 	updated_at = models.DateTimeField(default=timezone.now, blank=True)
@@ -31,15 +31,15 @@ class IndonesiaSentimentNonStemming(models.Model) :
 	def __str__(self):
 		return str(self.id) + " " + self.article.filename
 
-class IndonesiaSentimentStemming(models.Model) :
-	article = models.ForeignKey(Article, on_delete=models.CASCADE)
-	result = models.FileField(upload_to='sentiment_en_articles_politik/')
-	value = models.IntegerField(default = 0)
-	created_at = models.DateTimeField(default=timezone.now, blank=True)
-	updated_at = models.DateTimeField(default=timezone.now, blank=True)
+# class IndonesiaSentimentStemming(models.Model) :
+# 	article = models.ForeignKey(Article, on_delete=models.CASCADE)
+# 	result = models.FileField(upload_to='sentiment_en_articles_politik/')
+# 	value = models.IntegerField(default = 0)
+# 	created_at = models.DateTimeField(default=timezone.now, blank=True)
+# 	updated_at = models.DateTimeField(default=timezone.now, blank=True)
 	
-	def __str__(self):
-		return str(self.id) + " " + self.article.filename
+# 	def __str__(self):
+# 		return str(self.id) + " " + self.article.filename
 
 
 	
