@@ -59,40 +59,13 @@ def home(req) :
 			else :
 				rel_id = '-' 
 
-			# if article['rel_id_stemming'] == 1:
-			# 	rel_id_stemming  = 'O'
-			# 	total_relevan_id2 = total_relevan_id2 + 1
-			# elif article['rel_id_stemming'] == -1 :
-			# 	rel_id_stemming = 'X'
-			# 	total_irrelevan_id2 = total_irrelevan_id2 +1
-			# else :
-			# 	rel_id_stemming = '-' 
+			evaluation = '-'
 
-	# 		temp = '''
-	# 			<tr>
-	# 				<td> {0} </td>
-	# 				<td> <a href="view/{1}">{2} </a> </td>
-	# 				<td> 
-	# 					{3}
-	# 				</td>
-	# 				<td> 
-	# 					{4}
-	# 				</td>
-	# 			</tr>
-	# 		'''.format(article['index'], article['pk'],  article['filename'], rel_en, rel_id_nonstemming, rel_id_stemming)
-
-	# 		html_articles = html_articles + temp
-
-	# temp = '''
-	# 			<p> total relevan english = {0} </p>  
-	# 			<p> total irrelevan english = {1} </p>
-	# 			<p> total relevan indonesia non stemming = {4} </p>  
-	# 			<p> total irrelevan indonesia non stemming = {5} </p>
-	# 			<p> total relevan indonesia stemming = {6} </p>  
-	# 			<p> total irrelevan indonesia stemming = {7} </p>
-	# 			<p> belum dibaca = {2} </p>
-	# 			<p> total artikel = {3} </p>
-	# 		'''.format(total_relevan_en, total_irrelevan_en, len(articles) - total_relevan_en - total_irrelevan_en, len(articles), total_relevan_id, total_irrelevan_id, total_relevan_id2, total_irrelevan_id2)
+			if (rel_en != '-') :
+				if (rel_en == 'TP' or rel_en == 'FN') :
+					evaluation = 'Anies - Sandi'
+				else :
+					evaluation = 'Ahok - Djarot'
 
 			temp = '''
 				<tr>
@@ -104,8 +77,11 @@ def home(req) :
 					<td> 
 						{4}
 					</td>
+					<td>
+						{5}
+					</td>
 				</tr>
-			'''.format(article['index'], article['pk'],  article['filename'], rel_en, rel_id)
+			'''.format(article['index'], article['pk'],  article['filename'], rel_en, rel_id, evaluation)
 
 			html_articles = html_articles + temp
 
